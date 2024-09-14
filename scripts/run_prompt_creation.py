@@ -563,7 +563,7 @@ def main():
         elif is_new_speaker_prompt:
             sample_prompt = NEW_PROMPT
         for key in EXPECTED_COLUMNS:
-            sample_prompt = sample_prompt.replace(f"[{key}]", sample[key])
+            sample_prompt = sample_prompt.replace(f"[{key}]", str(sample[key]))
         if accent_column_name is not None and sample.get(accent_column_name, "Unindentified") != "Unindentified":
             sample_prompt = sample_prompt.replace("[accent]", sample["accent"])
             
