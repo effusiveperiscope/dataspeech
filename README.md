@@ -1,3 +1,6 @@
+# Instructions
+See [INSTRUCTIONS.md](INSTRUCTIONS.md)
+
 # Data-Speech
 
 Data-Speech is a suite of utility scripts designed to tag speech datasets. 
