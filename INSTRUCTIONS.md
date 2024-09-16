@@ -7,16 +7,16 @@ First, we need to filter our dataset down to the subset that we actually use for
 - Remove any utterances corresponding to multiple speakers
 - Normalize the audio (I suspect this might be beneficial for the neural audio codec. For some reason this uses a large amount of memory, so I couldn't use multiprocessing on my machine).
 
-Note that you need to change the hardcoded repo name at the end of the script so you upload to your own huggingface account. Then, run the stage 1 dataset script (change the corresponding dataset) which will estimate things like pitch and SDR (this took me ~2hrs on a 3080Ti for 48k hrs of audio):
+**Note** that you need to change the hardcoded repo name at the end of the notebook so you upload to your own huggingface account. Then, run the stage 1 dataset script (change the corresponding dataset) which will estimate things like pitch and SDR (this took me ~2hrs on a 3080Ti for 48k hrs of audio):
 ```
 python main.py "therealvul/parlertts-pony-speech-audio" --configuration "default"  --output_dir ./tmp_pony_speech/  --text_column_name "transcription"  --audio_column_name "audio"  --cpu_num_workers 8  --rename_column  --apply_squim_quality_estimation
 ```
 
 This will write to an output directory called `tmp_pony_speech`.
 
-The next step of processing requires a `speaker_id` column. Run `speaker_id_gender_fixer.ipynb` which will add this column based on all the speakers in the dataset. It also has a cell for removing rows corresponding to multiple speakers (redundant here, but was used the first time I made the dataset). Then change the repo at the bottom and push to your HF (the next few scripts require datasets hosted on huggingface).
+The next step of processing requires a `speaker_id` column. Run `speaker_id_gender_fixer.ipynb` which will add this column based on all the speakers in the dataset. It also has a cell for removing rows corresponding to multiple speakers--redundant here, but was used the first time I made the dataset. Then change the repo at the bottom and push to your HF (the next few scripts require datasets hosted on huggingface).
 
-Then we can run the stage 2 dataset script (change the input/open repo names accordingly) which will convert the extracted statistics into phrases like "noisy" or "very clean" or "expressive" based on text bins; I used the text bins that came with the dataspeech repo.
+Then we can run the stage 2 dataset script (change the input/output repo names accordingly) which will convert the extracted statistics into phrases like "noisy" or "very clean" or "expressive" based on text bins; I used the text bins that came with the dataspeech repo.
 
 ```
 python ./scripts/metadata_to_text.py "therealvul/parlertts_pony_speech_ids_fixed_stage1" --repo_id "parlertts_pony_speech_tags_stage2" --configuration "default" --output_dir "./tmp_pony_speech_tagged" --cpu_num_workers "8" --leading_split_for_bins "train" --plot_directory "./plots/" --path_to_text_bins "./examples/tags_to_annotations/v02_text_bins.json" --apply_squim_quality_estimation
